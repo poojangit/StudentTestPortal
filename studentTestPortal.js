@@ -1,3 +1,4 @@
+const readlineSync = require('readline-sync');
 var studentDetails = [
     {
         Roll_no: 501,
@@ -173,5 +174,100 @@ var studentDetails = [
         Class: 9,
         Gender: "Female",
         test_score: []
-    }	
-] 
+    }
+]
+let testTaken = false
+let resultGenerated = false
+function mainMenu() {
+    console.log("1 Take Test")
+    console.log("2 Generate Result")
+    console.log("3 View Students Result")
+    console.log("4 Exit from the choice")
+
+    const choice = readlineSync.question('Please select an option : ')
+
+    switch (choice) {
+        case '1':
+            takeTest();
+            break;
+        case '2':
+            if(!testTaken){
+                console.log("Please take the test first");
+                mainMenu()
+            }
+            else{
+            GenerateResult();
+            }
+            break;
+        case '3':
+            if(!resultGenerated){
+                console.log("Please Calculate the total marks and percentage first");
+                mainMenu()
+            }
+            viewStudentsResult();
+            break;
+        case '4':
+            return
+        default:
+            console.log('Invalid choice. Please select again');
+            mainMenu();
+            break;
+    }
+}
+mainMenu();
+
+function generateRandomNum() {
+    return Math.floor(Math.random() * 51) + 50;
+}
+
+function takeTest() {
+    const subjects = ["Java", "Python", "ReactJs"];
+    for (let test of studentDetails) {
+        test.test_score = subjects.map(subject => ({
+            sub_name: subject,
+            marks: generateRandomNum()
+        }))
+    }
+    testTaken = true
+    console.log("Test scores have been generated for all students.");
+    mainMenu()
+}
+function GenerateResult() {
+    studentDetails.forEach(student => {
+        if (student.test_score.length === 0) {
+            console.log(`No test scores available for ${student.Name}`);
+        }
+        else {
+            let totalMarks = 0;
+            student.test_score.forEach(score => {
+                totalMarks += score.marks;
+            });
+            const numSubjects = student.test_score.length;
+            student.totalMarks = totalMarks;
+            student.percentage = (totalMarks / (numSubjects * 100)) * 100;
+        }
+    });
+    resultGenerated = true
+    console.log("Generated the result along with total marks and percentage");
+    mainMenu() 
+}
+
+function viewStudentsResult() {
+    const roll_no = parseInt(readlineSync.question("Enter Roll number: "));
+    const student = studentDetails.find(s => s.Roll_no === roll_no);
+    if (student) {
+        if (!student.totalMarks || !student.percentage) {
+            console.log(`Results for ${student.Name} are not generated. Please generate the result.`);
+        } else {
+            console.log(`Results for ${student.Name}:`);
+            student.test_score.forEach(score => {
+                console.log(`${score.sub_name}: ${score.marks}`);
+            });
+            console.log(`Total Marks: ${student.totalMarks}`);
+            console.log(`Percentage: ${student.percentage.toFixed(2)}%`);
+        }
+    } else {
+        console.log("Student not found");
+    }
+    mainMenu();
+}
