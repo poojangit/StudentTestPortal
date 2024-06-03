@@ -182,7 +182,8 @@ function mainMenu() {
     console.log("1 Take Test")
     console.log("2 Generate Result")
     console.log("3 View Students Result")
-    console.log("4 Exit from the choice")
+    console.log("4 View Classwise result ")
+    console.log("5 Exit from the choice")
 
     const choice = readlineSync.question('Please select an option : ')
 
@@ -191,22 +192,25 @@ function mainMenu() {
             takeTest();
             break;
         case '2':
-            if(!testTaken){
+            if (!testTaken) {
                 console.log("Please take the test first");
                 mainMenu()
             }
-            else{
-            GenerateResult();
+            else {
+                GenerateResult();
             }
             break;
         case '3':
-            if(!resultGenerated){
+            if (!resultGenerated) {
                 console.log("Please Calculate the total marks and percentage first");
                 mainMenu()
             }
             viewStudentsResult();
             break;
-        case '4':
+        case '4' :
+            viewClassWiseResult()
+           break
+        case '5':
             return
         default:
             console.log('Invalid choice. Please select again');
@@ -249,7 +253,7 @@ function GenerateResult() {
     });
     resultGenerated = true
     console.log("Generated the result along with total marks and percentage");
-    mainMenu() 
+    mainMenu()
 }
 
 function viewStudentsResult() {
@@ -271,3 +275,28 @@ function viewStudentsResult() {
     }
     mainMenu();
 }
+function viewClassWiseResult() {
+    const classes = studentDetails.map(student => student.Class); 
+    const uniqueClassesSet = new Set(classes)
+    const uniqueClassesArray = [...uniqueClassesSet]
+    uniqueClassesArray.forEach(classNum => {
+        console.log(`Class ${classNum} Results:`);
+        const classStudents = studentDetails.filter(student => student.Class === classNum);
+        classStudents.forEach(student => {
+            console.log(`Name: ${student.Name}`);
+            if (!student.totalMarks || !student.percentage) {
+                console.log(`Results for ${student.Name} are not generated. Please generate the result.`);
+            } else {
+                student.test_score.forEach(score => {
+                    console.log(`${score.sub_name}: ${score.marks}`);
+                });
+                console.log(`Total Marks: ${student.totalMarks}`);
+                console.log(`Percentage: ${student.percentage.toFixed(2)}%`);
+            }
+            console.log('-------------------');
+        });
+    });
+    mainMenu();
+}
+
+
