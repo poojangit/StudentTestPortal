@@ -181,7 +181,8 @@ function mainMenu() {
     console.log("1 Take Test")
     console.log("2 View Students Result")
     console.log("3 View Classwise result ")
-    console.log("4 Exit from the choice")
+    console.log("4 View top performer");
+    console.log("5 Exit from the choice")
 
     const choice = readlineSync.question('Please select an option : ')
 
@@ -199,7 +200,9 @@ function mainMenu() {
         case '3' :
             viewClassWiseResult()
            break
-        case '4':
+        case '4' :
+            viewTopPerformer()
+        case '5':
             return
         default:
             console.log('Invalid choice. Please select again');
@@ -274,6 +277,27 @@ function viewClassWiseResult() {
         });
     });
     mainMenu();
+}
+
+function viewTopPerformer() {
+    const classes = studentDetails.map(student=> student.Class)
+    const uniqueClassesSet = new Set(classes)
+    const uniqueClassesArray = [...uniqueClassesSet]
+    uniqueClassesArray.forEach(classNum=>{
+        console.log(`Class ${classNum} Top Performer`);
+        const classStudents = studentDetails.filter(student => student.Class && student.totalMarks !== undefined)
+        const topPerformers = classStudents.sort((a,b) => b.totalMarks-a.totalMarks).slice(0,3)
+        if(topPerformers.length === 0){
+            console.log("No results available for this class");
+        }
+        else {
+            topPerformers.forEach((student,index) => {
+                console.log(`${index + 1}. ${student.Name} - Total Marks: ${student.totalMarks}, Percentage: ${student.percentage.toFixed(2)}%`);
+            })
+        }
+        console.log('-------------------------------------');
+    })
+    mainMenu()
 }
 
 
